@@ -1,31 +1,25 @@
-import ReactDOMServer from "react-dom/server";
-import React from "react";
-import { PageLayout } from "./PageLayout";
-import { html } from "vite-plugin-ssr";
-import { ContextProps, ReactComponent } from "./types";
-import logoUrl from "./logo.svg";
+import ReactDOMServer from 'react-dom/server'
+import React from 'react'
+import { PageLayout } from './PageLayout'
+// import { html } from "vite-plugin-ssr";
+import { ContextProps, ReactComponent } from './types'
+import logoUrl from './logo.svg'
 
-export { render };
-export { passToClient };
+export { render }
+export { passToClient }
 
 // See https://github.com/brillout/vite-plugin-ssr#data-fetching
-const passToClient = ["pageProps"];
+const passToClient = ['pageProps']
 
-function render({
-  Page,
-  contextProps,
-}: {
-  Page: ReactComponent;
-  contextProps: ContextProps;
-}) {
+function render({ Page, contextProps }: { Page: ReactComponent; contextProps: ContextProps }) {
   const pageHtml = ReactDOMServer.renderToString(
     <PageLayout>
       <Page {...contextProps.pageProps} />
     </PageLayout>
-  );
-  const title = "My Vite SSR app";
-  const description = "A Vite SSR app";
-  return html`<!DOCTYPE html>
+  )
+  const title = 'My Vite SSR app'
+  const description = 'A Vite SSR app'
+  return contextProps.html`<!DOCTYPE html>
     <html lang="en">
       <head>
         <meta charset="UTF-8" />
@@ -35,7 +29,7 @@ function render({
         <title>${title}</title>
       </head>
       <body>
-        <div id="page-view">${html.dangerouslySetHtml(pageHtml)}</div>
+        <div id="page-view">${contextProps.html.dangerouslySetHtml(pageHtml)}</div>
       </body>
-    </html>`;
+    </html>`
 }

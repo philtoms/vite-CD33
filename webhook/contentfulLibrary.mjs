@@ -1,5 +1,4 @@
 import contentful from 'contentful'
-import cookies from 'js-cookie'
 import dotenv from 'dotenv'
 
 dotenv.config()
@@ -15,23 +14,21 @@ const CDN_SPACE = process.env.CONTENTFUL_SPACE_ID
 const CDN_ACCESS_TOKEN = process.env.CONTENTFUL_ACCESS_TOKEN
 
 // Called from clientside
-export const getContentFromContentful = (entryId, isPreview) => {
+export const getContentFromContentful = (entryId, isPublish) => {
   if (!entryId) throw new Error('You need to provide entryId.')
-  isPreview = isPreview || cookies.get('contentType') === 'preview'
 
-  const environment = isPreview ? PREVIEW_ENV : CDN_ENV
-  const space = isPreview ? PREVIEW_SPACE : CDN_SPACE
-  const accessToken = isPreview ? PREVIEW_ACCESS_TOKEN : CDN_ACCESS_TOKEN
+  const environment = isPublish ? CDN_ENV : PREVIEW_ENV
+  const space = isPublish ? CDN_SPACE : PREVIEW_SPACE
+  const accessToken = isPublish ? CDN_ACCESS_TOKEN : PREVIEW_ACCESS_TOKEN
+  const host = isPublish ? 'cdn.contentful.com' : 'preview.contentful.com'
 
-  console.log({ environment, space, accessToken: '****' })
-  if (isPreview) console.log(`Getting Contentful data using Preview keys from "${environment}" environment`)
-  else console.log(`Getting Contentful data using Live CDN keys from "${environment}" environment`)
+  console.log({ host, environment, space, accessToken: '****' })
 
   const client = createClient({
     environment,
     space,
     accessToken,
-    host: isPreview ? 'preview.contentful.com' : 'cdn.contentful.com'
+    host
   })
 
   return client.getEntry(entryId, { include: 2 }).catch((e) => {

@@ -88,14 +88,7 @@ async function uploadDist(dir: string, bundle: OutputBundle) {
 
   const results = await Promise.all(
     Object.entries(bundle).map(([name, item]) => {
-      let source: string | Uint8Array, code: string, fileName: string, facadeModuleId: string | null
-
-      if ('source' in item) {
-        ;({ source, fileName } = item)
-      } else {
-        ;({ code, facadeModuleId } = item)
-      }
-
+      const { source, code, fileName, facadeModuleId } = item
       const moduleSource = fileName.includes('.content') ? readContent(isServer, facadeModuleId) : source || code
 
       const specifier = versionKey(true, isServer, fileName, moduleSource)

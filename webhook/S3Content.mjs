@@ -9,11 +9,6 @@ export default () => {
   const client = new S3Client({ region })
 
   const uploadFile = (Body, Key) => {
-    const region = process.env.S3_REGION
-    const Bucket = process.env.S3_BUCKET
-
-    const client = new S3Client({ region })
-
     const uploadParams = {
       Bucket,
       Body,
@@ -35,9 +30,9 @@ export default () => {
     }
     let content = ''
     const command = new GetObjectCommand(params)
-    try {
-      const response = await client.send(command)
-      return new Promise((resolve) => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const response = await client.send(command)
         const body = response.Body
         body.on('data', (chunk) => {
           content += chunk
@@ -45,10 +40,13 @@ export default () => {
         body.on('end', () => {
           resolve(content)
         })
-      })
-    } catch (err) {
-      console.log('PIPSQUEEK', params)
-    }
+      } catch (err) {
+        if (err.name === 'NoSuchKey') {
+          resolve({ NoSuchKey: true })
+        }
+        reject(err)
+      }
+    })
   }
 
   return {

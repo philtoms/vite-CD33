@@ -8,12 +8,13 @@ import dotenv from 'dotenv'
 
 dotenv.config()
 
-type Version = {
-  [key: string]: {
+type Version = Record<
+  string,
+  {
     file: string
     specifier: string
   }
-}
+>
 
 const options: Partial<SimpleGitOptions> = {
   baseDir: process.cwd(),
@@ -61,7 +62,7 @@ const versionKey = (isSpecifier: boolean, isServer: boolean, key: string, source
     : path.join(isServer ? 'server' : 'client', key)
 }
 
-const createVersionManifest = (isServer: boolean): Record<string, unknown> => {
+const createVersionManifest = (isServer: boolean): Version => {
   let version = {}
   if (isServer) {
     const fileName = 'manifest.json'

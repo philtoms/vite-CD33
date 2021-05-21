@@ -22,7 +22,7 @@ const options: Partial<SimpleGitOptions> = {
 
 const git = simpleGit(options)
 
-const region = process.env.AWS_REGION
+const region = process.env.S3_REGION
 const Bucket = process.env.S3_BUCKET
 
 const client = new S3Client({ region })
@@ -88,14 +88,7 @@ async function uploadDist(dir: string, bundle: OutputBundle) {
 
   const results = await Promise.all(
     Object.entries(bundle).map(([name, item]) => {
-      let source: string | Uint8Array, code: string, fileName: string, facadeModuleId: string | null
-
-      if ('source' in item) {
-        ;({ source, fileName } = item)
-      } else {
-        ;({ code, facadeModuleId } = item)
-      }
-
+      const { source, code, fileName, facadeModuleId } = item
       const moduleSource = fileName.includes('.content') ? readContent(isServer, facadeModuleId) : source || code
 
       const specifier = versionKey(true, isServer, fileName, moduleSource)
@@ -104,7 +97,7 @@ async function uploadDist(dir: string, bundle: OutputBundle) {
         specifier,
         file
       }
-      return uploadFile(moduleSource, specifier.replace('{mkey}', root))
+      return uploadFile(moduleSource, specifier)
     })
   )
   if (isServer) {

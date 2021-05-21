@@ -1,5 +1,5 @@
 import express from 'express'
-import { createPageRender } from 'vite-plugin-ssr'
+import { createPageRender, html } from 'vite-plugin-ssr'
 import * as vite from 'vite'
 
 const isProduction = process.env.NODE_ENV === 'production'
@@ -27,14 +27,14 @@ async function startServer() {
   const renderPage = createPageRender({ viteDevServer, isProduction, root })
   app.get('*', async (req, res, next) => {
     const url = req.originalUrl
-    const contextProps = {}
+    const contextProps = { html }
     const result = await renderPage({ url, contextProps })
     if (result.nothingRendered) return next()
 
-    const html =
-      mode === 'HTML' ? (result.renderResult as string).replace(/<script(.*?)<\/script>/g, '') : result.renderResult
+    // const html =
+    //   mode === 'HTML' ? (result.renderResult as string).replace(/<script(.*?)<\/script>/g, '') : result.renderResult
 
-    res.status(result.statusCode).send(html)
+    res.status(result.statusCode).send(result.renderResult)
   })
 
   const port = process.env.PORT || 3000

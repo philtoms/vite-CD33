@@ -23,7 +23,7 @@ export const getContentFromContentful = (entryId, isPreview) => {
   const space = isPreview ? PREVIEW_SPACE : CDN_SPACE
   const accessToken = isPreview ? PREVIEW_ACCESS_TOKEN : CDN_ACCESS_TOKEN
 
-  console.log({ environment, space, accessToken })
+  console.log({ environment, space, accessToken: '****' })
   if (isPreview) console.log(`Getting Contentful data using Preview keys from "${environment}" environment`)
   else console.log(`Getting Contentful data using Live CDN keys from "${environment}" environment`)
 

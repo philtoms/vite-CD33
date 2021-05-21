@@ -61,21 +61,41 @@ const versionKey = (isSpecifier: boolean, isServer: boolean, key: string, source
     : path.join(isServer ? 'server' : 'client', key)
 }
 
+const createVersionManifest = (isServer: boolean): Record<string, unknown> => {
+  let version = {}
+  if (isServer) {
+    const fileName = 'manifest.json'
+    const moduleSource = fs.readFileSync(path.join(__dirname, '../../dist/client', fileName), 'utf-8')
+    const specifier = versionKey(true, isServer, fileName, moduleSource)
+    const file = versionKey(false, false, fileName, moduleSource)
+    version = {
+      'client/manifest': {
+        specifier,
+        file
+      }
+    }
+  }
+  return version
+}
+
 async function uploadDist(dir: string, bundle: OutputBundle) {
   const isServer = dir.endsWith('/server')
   const status = await git.status()
   const { current } = status
   const root = current || ''
 
-  const version: Version = {
-    'client/manifest': {
-      specifier: path.join(root, 'client', 'manifest.json'),
-      file: 'client/manifest.json'
-    }
-  }
+  const version = createVersionManifest(isServer)
+
   const results = await Promise.all(
     Object.entries(bundle).map(([name, item]) => {
-      const { source, code, fileName, facadeModuleId } = item
+      let source: string | Uint8Array, code: string, fileName: string, facadeModuleId: string | null
+
+      if ('source' in item) {
+        ;({ source, fileName } = item)
+      } else {
+        ;({ code, facadeModuleId } = item)
+      }
+
       const moduleSource = fileName.includes('.content') ? readContent(isServer, facadeModuleId) : source || code
 
       const specifier = versionKey(true, isServer, fileName, moduleSource)

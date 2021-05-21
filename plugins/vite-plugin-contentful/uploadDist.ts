@@ -22,7 +22,7 @@ const options: Partial<SimpleGitOptions> = {
 
 const git = simpleGit(options)
 
-const region = process.env.AWS_REGION
+const region = process.env.S3_REGION
 const Bucket = process.env.S3_BUCKET
 
 const client = new S3Client({ region })
@@ -97,7 +97,7 @@ async function uploadDist(dir: string, bundle: OutputBundle) {
         specifier,
         file
       }
-      return uploadFile(moduleSource, specifier.replace('{mkey}', root))
+      return uploadFile(moduleSource, specifier)
     })
   )
   if (isServer) {

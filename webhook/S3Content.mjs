@@ -3,13 +3,13 @@ import s3 from '@aws-sdk/client-s3'
 const { S3Client, PutObjectCommand, GetObjectCommand } = s3
 
 export default () => {
-  const region = process.env.AWS_REGION
+  const region = process.env.S3_REGION
   const Bucket = process.env.S3_BUCKET
 
   const client = new S3Client({ region })
 
   const uploadFile = (Body, Key) => {
-    const region = process.env.AWS_REGION
+    const region = process.env.S3_REGION
     const Bucket = process.env.S3_BUCKET
 
     const client = new S3Client({ region })

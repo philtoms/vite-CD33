@@ -5,7 +5,7 @@ const retrieveManifest = (store, mkey, willClone = true) => {
     return store.downloadFile(path.join(mkey, 'manifest.json')).then(async (source) => {
       if (source.NoSuchKey) {
         if (willClone) {
-          console.log(`cloning main into ${mkey}`)
+          console.log({ NoSuchKey: `cloning main into ${mkey}` })
           return retrieveManifest(store, 'main')
         } else {
           throw source
@@ -14,7 +14,7 @@ const retrieveManifest = (store, mkey, willClone = true) => {
       return JSON.parse(source)
     })
   } catch (err) {
-    console.log(err)
+    console.log({ error: err })
   }
 }
 

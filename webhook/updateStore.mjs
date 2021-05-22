@@ -13,14 +13,14 @@ const updateStore = async (name, isPublish) => {
   const content = sanitize(await getContentFromContentful(name, isPublish))
   if (!content || content.fields === null) {
     if (isPublish) {
-      console.warn(`${name} is not published - aborting update`)
+      console.warn({ warning: `${name} is not published - aborting update` })
     } else {
-      console.error(`${name} not found - aborting update`)
+      console.error({ error: `${name} not found - aborting update` })
     }
     return
   }
-
-  console.log(content.fields)
+  contentSource = JSON.stringify(content)
+  console.log({ content: contentSource })
 
   const store = S3()
 
@@ -32,12 +32,12 @@ const updateStore = async (name, isPublish) => {
   )) {
     const [key, value] = item
     // todo: update client content
-    let source = /*item.specifier.includes('server') ?*/ `export default ${JSON.stringify(content)}`
-    /*:`module.exports = {default:${JSON.stringify(content)}}`*/
+    let source = /*item.specifier.includes('server') ?*/ `export default ${contentSource}`
+    /*:`module.exports = {default:${contentSource}}`*/
 
     const hash = crc.crc32(Buffer.from(source, 'utf8')).toString('hex')
     if (value.specifier.includes(hash)) {
-      console.log(`${value.specifier} already stored - debouncing`)
+      console.info({ info: `${value.specifier} already stored - debouncing` })
       continue
     }
 
@@ -57,7 +57,7 @@ const updateStore = async (name, isPublish) => {
   const hash1 = crc.crc32(Buffer.from(JSON.stringify(manifest), 'utf8'))
   const hash2 = crc.crc32(Buffer.from(JSON.stringify(newManifest), 'utf8'))
   if (hash1 === hash2) {
-    console.log(`Manifest already published - debouncing`)
+    console.info({ info: `Manifest already published - debouncing` })
     return
   }
 

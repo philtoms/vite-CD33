@@ -8,9 +8,7 @@ console.log('building for ', mode)
 
 const { build } = vite
 
-buildForDist()
-
-async function buildForDist() {
+export default async function buildForDist() {
   await build()
   await build({ build: { ssr: true } })
 }

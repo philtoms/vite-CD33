@@ -26,6 +26,8 @@ const git = simpleGit(options)
 const region = process.env.S3_REGION
 const Bucket = process.env.S3_BUCKET
 
+console.log({ region, Bucket })
+
 const client = new S3Client({ region })
 
 const readContent = (isServer: boolean, fileName: string) => {

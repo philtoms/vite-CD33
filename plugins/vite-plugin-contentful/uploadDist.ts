@@ -34,11 +34,14 @@ const readContent = (isServer: boolean, fileName: string) => {
   return moduleSrc
 }
 
-const uploadFile = (Body: string, Key: string) => {
+const uploadFile = (Body: string, Key: string, versionPath: string) => {
   const uploadParams = {
     Bucket,
     Body,
-    Key
+    Key,
+    Metadata: {
+      'x-amz-meta-version-path': versionPath
+    }
   }
 
   const command = new PutObjectCommand(uploadParams)
@@ -49,26 +52,26 @@ const uploadFile = (Body: string, Key: string) => {
   })
 }
 
-const versionKey = (isSpecifier: boolean, isServer: boolean, key: string, source: string) => {
+const versionKey = (root: string, isServer: boolean, key: string, source: string) => {
   if (key.startsWith('assets')) {
-    return isSpecifier
+    return root
       ? key.includes('.content.')
         ? `${key}.${crc.crc32(Buffer.from(source, 'utf8')).toString('hex')}`
         : key
       : path.join(isServer ? 'server' : 'client', key)
   }
-  return isSpecifier
+  return root
     ? `${key}.${crc.crc32(Buffer.from(source, 'utf8')).toString('hex')}`
     : path.join(isServer ? 'server' : 'client', key)
 }
 
-const createVersionManifest = (isServer: boolean): Version => {
+const createVersionManifest = (isServer: boolean, root: string): Version => {
   let version = {}
   if (isServer) {
     const fileName = 'manifest.json'
     const moduleSource = fs.readFileSync(path.join(__dirname, '../../dist/client', fileName), 'utf-8')
-    const specifier = versionKey(true, isServer, fileName, moduleSource)
-    const file = versionKey(false, false, fileName, moduleSource)
+    const specifier = versionKey(root, false, fileName, moduleSource)
+    const file = versionKey('', false, fileName, moduleSource)
     version = {
       'client/manifest': {
         specifier,
@@ -85,26 +88,27 @@ async function uploadDist(dir: string, bundle: OutputBundle) {
   const { current } = status
   const root = current || ''
 
-  const version = createVersionManifest(isServer)
+  const version = createVersionManifest(isServer, root)
 
   const results = await Promise.all(
     Object.entries(bundle).map(([name, item]) => {
       const { source, code, fileName, facadeModuleId } = item
       const moduleSource = fileName.includes('.content') ? readContent(isServer, facadeModuleId) : source || code
 
-      const specifier = versionKey(true, isServer, fileName, moduleSource)
-      const file = versionKey(false, isServer, fileName, moduleSource)
+      const specifier = versionKey(root, isServer, fileName, moduleSource)
+      const file = versionKey('', isServer, fileName, moduleSource)
       version[name] = {
         specifier,
         file
       }
-      return uploadFile(moduleSource, specifier)
+      const versionPath = path.join(root, 'dist', file)
+      return uploadFile(moduleSource, specifier, versionPath)
     })
   )
   if (isServer) {
     console.log('\nVersion manifest', version)
     const manifestKey = path.join(root, 'manifest.json')
-    const log = await uploadFile(JSON.stringify(version), manifestKey)
+    const log = await uploadFile(JSON.stringify(version), manifestKey, manifestKey)
     results.push(log)
   }
   for (const result of results) {

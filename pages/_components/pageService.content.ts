@@ -1,4 +1,4 @@
-export default {
+const content = {
   fields: {
     title: {
       fields: {
@@ -37,3 +37,4 @@ export default {
     }
   }
 }
+export default content

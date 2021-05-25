@@ -32,7 +32,9 @@ const client = new S3Client({ region })
 
 const readContent = (isServer: boolean, fileName: string) => {
   const source = fs.readFileSync(fileName, 'utf-8')
-  const moduleSrc = isServer ? `module.exports = {default:${source.replace('export default', '')}}` : source
+  const moduleSrc = isServer
+    ? source.replace('export default content', 'module.exports = {default:content}')
+    : source.replace('export default content', 'export{content as c}')
   return moduleSrc
 }
 

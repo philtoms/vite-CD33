@@ -3,10 +3,8 @@ import simpleGit, { SimpleGitOptions } from 'simple-git'
 import { OutputBundle } from 'rollup'
 import path from 'path'
 import fs from 'fs'
-import crc from 'node-crc'
+import crc from 'crc'
 import dotenv from 'dotenv'
-
-const base = process.cwd()
 
 dotenv.config()
 
@@ -62,13 +60,11 @@ const versionKey = (root: string, isServer: boolean, key: string, source: string
   if (key.startsWith('assets')) {
     return root
       ? key.includes('.content.')
-        ? `${key}.${crc.crc32(Buffer.from(source, 'utf8')).toString('hex')}`
+        ? `${key}.${crc.crc32(source).toString(8)}`
         : key
       : path.join(isServer ? 'server' : 'client', key)
   }
-  return root
-    ? `${key}.${crc.crc32(Buffer.from(source, 'utf8')).toString('hex')}`
-    : path.join(isServer ? 'server' : 'client', key)
+  return root ? `${key}.${crc.crc32(source).toString(8)}` : path.join(isServer ? 'server' : 'client', key)
 }
 
 async function uploadDist(dir: string, bundle: OutputBundle) {

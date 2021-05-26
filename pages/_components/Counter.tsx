@@ -10,8 +10,8 @@ function Counter() {
       <button type="button" onClick={() => setCount((count) => count + 1)}>
         Counter {count}
       </button>
-      <section>{content.fields.title.fields.subheading}</section>
-      <section>{content.fields.title.fields.heading}</section>
+      <section>{content.title.subheading}</section>
+      <section>{content.title.heading}</section>
     </>
   )
 }

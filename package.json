@@ -11,6 +11,23 @@
     "webhook": "node webhook/index.mjs"
   },
   "dependencies": {
+    "@2k-web/bc-bg-video-react": "^1.0.5",
+    "@2k-web/bc-carousel-react": "^1.0.5",
+    "@2k-web/bc-copy-block-react": "^1.0.2",
+    "@2k-web/bc-featured-content-section-react": "^1.0.4",
+    "@2k-web/bc-featured-tiles-section-react": "^1.0.4",
+    "@2k-web/bc-footer-react": "^1.0.3",
+    "@2k-web/bc-grid-react": "^1.0.3",
+    "@2k-web/bc-image-react": "^1.0.2",
+    "@2k-web/bc-image-set-react": "^1.0.3",
+    "@2k-web/bc-link-react": "^1.0.2",
+    "@2k-web/bc-marquee-react": "^1.0.5",
+    "@2k-web/bc-news-tile-react": "^1.0.4",
+    "@2k-web/bc-picture-react": "^1.0.4",
+    "@2k-web/bc-social-tile-react": "^1.0.2",
+    "@2k-web/bc-types-react": "^1.0.1",
+    "@2k-web/bc-youtube-embed-react": "^1.0.3",
+    "@2kweb/isomorphic-match-media": "^1.1.3",
     "@aws-sdk/client-s3": "^3.16.0",
     "@rollup/plugin-commonjs": "^19.0.0",
     "@rollup/plugin-node-resolve": "^13.0.0",
@@ -18,8 +35,10 @@
     "@types/node": "^15.0.3",
     "@types/react": "^17.0.5",
     "@types/react-dom": "^17.0.5",
+    "@types/react-router-dom": "^5.1.7",
     "@vitejs/plugin-react-refresh": "^1.3.3",
     "chokidar": "^3.5.1",
+    "classnames": "^2.3.1",
     "contentful": "^8.3.5",
     "cross-env": "^7.0.3",
     "dotenv": "^9.0.2",
@@ -28,10 +47,15 @@
     "node-crc": "^1.3.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
+    "react-router-dom": "^5.2.0",
     "simple-git": "^2.39.0",
+    "styled-components": "^5.3.0",
     "ts-node": "^9.1.1",
     "typescript": "^4.2.4",
     "vite": "^2.3.2",
     "vite-plugin-ssr": "0.1.0-beta.44"
+  },
+  "devDependencies": {
+    "@types/styled-components": "^5.1.9"
   }
 }

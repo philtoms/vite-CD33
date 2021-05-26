@@ -1,17 +1,25 @@
-import ReactDOM from "react-dom";
-import React from "react";
-import { getPage } from "vite-plugin-ssr/client";
-import { PageLayout } from "./PageLayout";
+import ReactDOM from 'react-dom'
+import React from 'react'
+import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom'
 
-hydrate();
+import { getPage } from 'vite-plugin-ssr/client'
+import { PageLayout } from './PageLayout'
+
+hydrate()
 
 async function hydrate() {
-  const { Page, contextProps } = await getPage();
+  const { Page, contextProps } = await getPage()
 
   ReactDOM.hydrate(
     <PageLayout>
-      <Page {...contextProps.pageProps} />
+      <Router>
+        <Switch>
+          <Route path="/">
+            <Page {...contextProps.pageProps} />
+          </Route>
+        </Switch>
+      </Router>
     </PageLayout>,
-    document.getElementById("page-view")
-  );
+    document.getElementById('page-view')
+  )
 }

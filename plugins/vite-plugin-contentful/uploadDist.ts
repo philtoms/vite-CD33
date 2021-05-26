@@ -13,6 +13,7 @@ type Version = Record<
   {
     file: string
     specifier: string
+    metadata: Record<string, string>
   }
 >
 
@@ -30,21 +31,24 @@ console.log({ region, Bucket })
 
 const client = new S3Client({ region })
 
-const readContent = (isServer: boolean, fileName: string) => {
+const readContent = (isServer: boolean, fileName: string, content: string) => {
   const source = fs.readFileSync(fileName, 'utf-8')
+  const group = !isServer && content.match(/export{\S+\s+as\s+(\S+)}/)
+  const exportVar = group ? group[1] : 'c'
   const moduleSrc = isServer
     ? source.replace('export default content', 'module.exports = {default:content}')
-    : source.replace('export default content', 'export{content as c}')
-  return moduleSrc
+    : source.replace('export default content', `export{content as ${exportVar}}`)
+  return { moduleSrc, exportVar }
 }
 
-const uploadFile = (Body: string, Key: string, versionPath: string) => {
+const uploadFile = (Body: string, Key: string, versionPath: string, exportVar?: string) => {
   const uploadParams = {
     Bucket,
     Body,
     Key,
     Metadata: {
-      'x-amz-meta-version-path': versionPath
+      'x-amz-meta-version-path': versionPath,
+      'x-amz-meta-export-var': exportVar
     }
   }
 
@@ -78,16 +82,22 @@ async function uploadDist(dir: string, bundle: OutputBundle) {
   const results = await Promise.all(
     Object.entries(bundle).map(([name, item]) => {
       const { source, code, fileName, facadeModuleId } = item
-      const moduleSource = fileName.includes('.content') ? readContent(isServer, facadeModuleId) : source || code
+      const content = source || code
+      const { moduleSrc, exportVar } = fileName.includes('.content')
+        ? readContent(isServer, facadeModuleId, content)
+        : content
 
-      const specifier = versionKey(root, isServer, fileName, moduleSource)
-      const file = versionKey('', isServer, fileName, moduleSource)
+      const specifier = versionKey(root, isServer, fileName, moduleSrc)
+      const file = versionKey('', isServer, fileName, moduleSrc)
       version[name] = {
         specifier,
-        file
+        file,
+        metadata: {
+          exportVar
+        }
       }
       const versionPath = path.join(root, 'dist', file)
-      return uploadFile(moduleSource, specifier, versionPath)
+      return uploadFile(moduleSrc, specifier, versionPath, exportVar)
     })
   )
 

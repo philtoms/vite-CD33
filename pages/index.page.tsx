@@ -1,19 +1,9 @@
-import React from "react";
-import { Counter } from "./_components/Counter";
+import React from 'react'
+import { Home } from '../src/pages/Home/Home'
+import { Counter } from './_components/Counter'
 
-export { Page };
+export { Page }
 
 function Page() {
-  return (
-    <>
-      <h1>Welcome</h1>
-      This page is:
-      <ul>
-        <li>Rendered to HTML.</li>
-        <li>
-          Interactive. <Counter />
-        </li>
-      </ul>
-    </>
-  );
+  return <Home />
 }

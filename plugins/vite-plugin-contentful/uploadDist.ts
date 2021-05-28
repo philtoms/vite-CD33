@@ -3,7 +3,7 @@ import simpleGit, { SimpleGitOptions } from 'simple-git'
 import { OutputBundle } from 'rollup'
 import path from 'path'
 import fs from 'fs'
-import crc from 'crc'
+import crc32 from 'crc/lib/crc32'
 import dotenv from 'dotenv'
 
 dotenv.config()
@@ -47,8 +47,7 @@ const uploadFile = (Body: string, Key: string, versionPath: string, exportVar?: 
     Body,
     Key,
     Metadata: {
-      'x-amz-meta-version-path': versionPath,
-      'x-amz-meta-export-var': exportVar
+      'x-amz-meta-version-path': versionPath
     }
   }
 
@@ -64,11 +63,11 @@ const versionKey = (root: string, isServer: boolean, key: string, source: string
   if (key.startsWith('assets')) {
     return root
       ? key.includes('.content.')
-        ? `${key}.${crc.crc32(source).toString(8)}`
+        ? `${key}.${crc32(source).toString(8)}`
         : key
       : path.join(isServer ? 'server' : 'client', key)
   }
-  return root ? `${key}.${crc.crc32(source).toString(8)}` : path.join(isServer ? 'server' : 'client', key)
+  return root ? `${key}.${crc32(source).toString(8)}` : path.join(isServer ? 'server' : 'client', key)
 }
 
 async function uploadDist(dir: string, bundle: OutputBundle) {
@@ -85,11 +84,12 @@ async function uploadDist(dir: string, bundle: OutputBundle) {
       const content = source || code
       const { moduleSrc, exportVar } = fileName.includes('.content')
         ? readContent(isServer, facadeModuleId, content)
-        : content
+        : { moduleSrc: content }
 
       const specifier = versionKey(root, isServer, fileName, moduleSrc)
       const file = versionKey('', isServer, fileName, moduleSrc)
-      version[name] = {
+      const key = (facadeModuleId || name).replace(process.cwd(), '')
+      version[key] = {
         specifier,
         file,
         metadata: {

@@ -1,8 +1,9 @@
 import fs from 'fs-extra'
 import path from 'path'
-import s3 from './s3.mjs'
+import S3 from './s3.mjs'
 
 export default (root, mkey) => {
+  const s3 = S3()
   const Manifest = async (node) => {
     const manifestPath = path.join(root, mkey, node, 'manifest.json')
     let manifest = fs.pathExistsSync(manifestPath) && fs.readJsonSync(manifestPath)

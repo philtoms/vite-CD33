@@ -18,7 +18,7 @@ test('Load a manifest from a mounted distro', async (t) => {
 test('Load a manifest from an unmounted distro', async (t) => {
   const { Manifest } = Distro('root', 'v2')
   await Manifest('server')
-  t.is(s3.downloadFile.calls, 1)
+  t.is(s3().downloadFile.calls, 1)
   t.is(fs.writeJsonSync.values[0][0], 'root/v2/server/manifest.json')
 })
 
@@ -71,7 +71,7 @@ test('patch a v1 distro with v2 items', async (t) => {
   const { Manifest } = Distro('root', 'v2')
   await Distro('root', 'v1').patch(Manifest('server'))
   t.deepEqual(fs.outputFileSync.values[0][1], distroV2)
-  t.deepEqual(s3.uploadFile.values[0], ['v1/server/manifest.json', distroV2])
+  t.deepEqual(s3().uploadFile.values[0], ['v1/server/manifest.json', distroV2])
 })
 
 test('patch a v1 distro with v1 items', async (t) => {

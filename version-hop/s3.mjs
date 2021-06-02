@@ -8,11 +8,14 @@ export default () => {
 
   const client = new S3Client({ region })
 
-  const uploadFile = (Body, Key) => {
+  const uploadFile = (Body, Key, versionPath) => {
     const uploadParams = {
       Bucket,
       Body,
-      Key
+      Key,
+      Metadata: {
+        'x-amz-meta-version-path': versionPath
+      }
     }
 
     const command = new PutObjectCommand(uploadParams)

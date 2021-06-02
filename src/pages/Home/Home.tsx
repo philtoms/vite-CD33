@@ -9,8 +9,9 @@ import { IImgSrc, IPage, IPageHome } from '../../../@types/generated/contentful'
 import { linkDto } from '../../dtos/link.dto'
 import { featuredContentSectionDto } from '../../dtos/featuredContentSection.dto'
 import { getPageComponents } from '../../getPageComponents'
-import homePageContent from './home.content'
+import homePageContent from './7alD1D0g6sPwxKMXF8HDAk.content'
 
+console.log({ homePageContent })
 type HomeProps = {
   // marqueeData: any
   // whatsNewSection: any

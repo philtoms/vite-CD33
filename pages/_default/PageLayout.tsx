@@ -1,7 +1,7 @@
 import React from 'react'
 import { ThemeProvider } from 'styled-components'
 import { BcFooter } from '@2k-web/bc-footer-react'
-import footerContent from '../../src/shared.content'
+import footerContent from '../../src/footer.data'
 import { BeaconTheme, BeaconThemeGlobalStyle } from '../../src/theme'
 
 export { PageLayout }
